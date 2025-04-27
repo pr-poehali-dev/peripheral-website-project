@@ -1,4 +1,6 @@
 
+import { useEffect, useRef } from "react";
+
 type Article = {
   id: number;
   title: string;
@@ -45,16 +47,66 @@ const expertArticles: Article[] = [
   }
 ];
 
+// Дублируем статьи для бесконечной прокрутки
+const extendedArticles = [...expertArticles, ...expertArticles];
+
 export const ExpertsScrollList = () => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+    
+    let animationId: number;
+    let scrollPosition = 0;
+    const scrollSpeed = 0.7; // пикселей за кадр
+    const totalWidth = scrollContainer.scrollWidth;
+    
+    const scroll = () => {
+      if (!scrollContainer) return;
+      
+      scrollPosition += scrollSpeed;
+      
+      // Если дошли до половины (до дубликатов), возвращаемся в начало
+      if (scrollPosition >= totalWidth / 2) {
+        scrollPosition = 0;
+      }
+      
+      scrollContainer.scrollLeft = scrollPosition;
+      animationId = requestAnimationFrame(scroll);
+    };
+    
+    // Запускаем анимацию
+    animationId = requestAnimationFrame(scroll);
+    
+    // Останавливаем прокрутку при наведении
+    const handleMouseEnter = () => cancelAnimationFrame(animationId);
+    const handleMouseLeave = () => {
+      animationId = requestAnimationFrame(scroll);
+    };
+    
+    scrollContainer.addEventListener('mouseenter', handleMouseEnter);
+    scrollContainer.addEventListener('mouseleave', handleMouseLeave);
+    
+    return () => {
+      cancelAnimationFrame(animationId);
+      scrollContainer.removeEventListener('mouseenter', handleMouseEnter);
+      scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+  
   return (
     <div className="w-full mb-8">
       <h2 className="text-xl font-semibold mb-4">Статьи экспертов</h2>
       
-      <div className="overflow-x-auto pb-4 scrollbar-hide">
+      <div 
+        ref={scrollContainerRef}
+        className="overflow-x-auto pb-4 scrollbar-hide"
+      >
         <div className="flex space-x-4 min-w-max">
-          {expertArticles.map((article) => (
+          {extendedArticles.map((article, index) => (
             <div 
-              key={article.id} 
+              key={`${article.id}-${index}`} 
               className="border-l-4 border-blue-500 pl-4 py-3 pr-4 rounded-r-lg bg-white hover:bg-gray-50 transition-colors w-80 flex-shrink-0"
             >
               <div className="flex justify-between items-start">

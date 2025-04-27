@@ -1,5 +1,6 @@
 
 import { Badge } from "@/components/ui/badge";
+import { useEffect, useRef } from "react";
 
 type Product = {
   id: number;
@@ -47,7 +48,55 @@ const newProducts: Product[] = [
   }
 ];
 
+// Дублируем товары для бесконечной прокрутки
+const extendedProducts = [...newProducts, ...newProducts];
+
 export const NewProductsScrollList = () => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+    
+    let animationId: number;
+    let scrollPosition = 0;
+    const scrollSpeed = 0.5; // пикселей за кадр
+    const totalWidth = scrollContainer.scrollWidth;
+    const containerWidth = scrollContainer.clientWidth;
+    
+    const scroll = () => {
+      if (!scrollContainer) return;
+      
+      scrollPosition += scrollSpeed;
+      
+      // Если дошли до половины (до дубликатов), возвращаемся в начало
+      if (scrollPosition >= totalWidth / 2) {
+        scrollPosition = 0;
+      }
+      
+      scrollContainer.scrollLeft = scrollPosition;
+      animationId = requestAnimationFrame(scroll);
+    };
+    
+    // Запускаем анимацию
+    animationId = requestAnimationFrame(scroll);
+    
+    // Останавливаем прокрутку при наведении
+    const handleMouseEnter = () => cancelAnimationFrame(animationId);
+    const handleMouseLeave = () => {
+      animationId = requestAnimationFrame(scroll);
+    };
+    
+    scrollContainer.addEventListener('mouseenter', handleMouseEnter);
+    scrollContainer.addEventListener('mouseleave', handleMouseLeave);
+    
+    return () => {
+      cancelAnimationFrame(animationId);
+      scrollContainer.removeEventListener('mouseenter', handleMouseEnter);
+      scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+  
   return (
     <div className="w-full mb-8">
       <div className="flex justify-between items-center mb-4">
@@ -55,11 +104,14 @@ export const NewProductsScrollList = () => {
         <Badge variant="secondary">New</Badge>
       </div>
       
-      <div className="overflow-x-auto pb-4 scrollbar-hide">
-        <div className="flex space-x-4 min-w-max">
-          {newProducts.map((product) => (
+      <div 
+        ref={scrollContainerRef}
+        className="overflow-x-auto pb-4 scrollbar-hide"
+      >
+        <div className="flex space-x-4 min-w-max auto-scroll-container">
+          {extendedProducts.map((product, index) => (
             <div 
-              key={product.id} 
+              key={`${product.id}-${index}`} 
               className="border rounded-lg p-4 hover:shadow-md transition-shadow w-64 flex-shrink-0"
             >
               <div className="flex justify-between items-start">

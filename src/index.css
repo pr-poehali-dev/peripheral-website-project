@@ -93,3 +93,8 @@
   -webkit-box-orient: vertical;  
   overflow: hidden;
 }
+
+/* Стили для плавной анимации автопрокрутки */
+.auto-scroll-container {
+  transition: transform 0.5s ease;
+}
