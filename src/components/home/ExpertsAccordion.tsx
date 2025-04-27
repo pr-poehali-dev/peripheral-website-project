@@ -1,11 +1,4 @@
 
-import { 
-  Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
-} from "@/components/ui/accordion";
-
 type Article = {
   id: number;
   title: string;
@@ -35,36 +28,47 @@ const expertArticles: Article[] = [
     author: "Дмитрий Иванов",
     previewText: "Сравнение технологий матриц, время отклика, частота обновления и другие важные характеристики.",
     date: "2025-04-12"
+  },
+  {
+    id: 4,
+    title: "Выбираем аудиоустройства для геймера",
+    author: "Сергей Васильев",
+    previewText: "Какие наушники лучше для разных жанров игр и как настроить звук для максимального погружения.",
+    date: "2025-04-08"
+  },
+  {
+    id: 5,
+    title: "Эргономика рабочего места: советы специалиста",
+    author: "Елена Смирнова",
+    previewText: "Как организовать рабочее пространство, чтобы избежать проблем со здоровьем при длительной работе за компьютером.",
+    date: "2025-04-05"
   }
 ];
 
-export const ExpertsAccordion = () => {
+export const ExpertsScrollList = () => {
   return (
-    <Accordion type="single" collapsible className="w-full mb-8">
-      <AccordionItem value="expert-articles">
-        <AccordionTrigger className="text-xl font-semibold">
-          Статьи экспертов
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-4 pt-2">
-            {expertArticles.map((article) => (
-              <div 
-                key={article.id} 
-                className="border-l-4 border-blue-500 pl-4 py-2 hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex justify-between items-start">
-                  <h3 className="font-medium">{article.title}</h3>
-                  <span className="text-sm text-gray-500">{new Date(article.date).toLocaleDateString("ru-RU")}</span>
-                </div>
-                <p className="text-sm text-gray-600 mt-1">{article.previewText}</p>
-                <div className="mt-2 text-sm font-medium text-blue-600">Автор: {article.author}</div>
+    <div className="w-full mb-8">
+      <h2 className="text-xl font-semibold mb-4">Статьи экспертов</h2>
+      
+      <div className="overflow-x-auto pb-4 scrollbar-hide">
+        <div className="flex space-x-4 min-w-max">
+          {expertArticles.map((article) => (
+            <div 
+              key={article.id} 
+              className="border-l-4 border-blue-500 pl-4 py-3 pr-4 rounded-r-lg bg-white hover:bg-gray-50 transition-colors w-80 flex-shrink-0"
+            >
+              <div className="flex justify-between items-start">
+                <h3 className="font-medium">{article.title}</h3>
+                <span className="text-sm text-gray-500 whitespace-nowrap ml-2">{new Date(article.date).toLocaleDateString("ru-RU")}</span>
               </div>
-            ))}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+              <p className="text-sm text-gray-600 mt-1 line-clamp-2">{article.previewText}</p>
+              <div className="mt-2 text-sm font-medium text-blue-600">Автор: {article.author}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default ExpertsAccordion;
+export default ExpertsScrollList;

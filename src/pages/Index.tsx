@@ -1,7 +1,7 @@
 
 import NavigationBar from "@/components/ui/navigation-bar";
-import NewProductsAccordion from "@/components/home/NewProductsAccordion";
-import ExpertsAccordion from "@/components/home/ExpertsAccordion";
+import NewProductsScrollList from "@/components/home/NewProductsAccordion";
+import ExpertsScrollList from "@/components/home/ExpertsAccordion";
 import PopularProducts from "@/components/home/PopularProducts";
 
 const Index = () => {
@@ -16,8 +16,8 @@ const Index = () => {
             Всё для вашего комфорта и производительности
           </p>
           
-          <NewProductsAccordion />
-          <ExpertsAccordion />
+          <NewProductsScrollList />
+          <ExpertsScrollList />
           <PopularProducts />
         </section>
       </main>
